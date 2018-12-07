@@ -12,6 +12,7 @@ import 'package:maui/db/entity/lesson.dart';
 import 'package:maui/db/entity/user.dart';
 import 'package:maui/repos/lesson_unit_repo.dart';
 import 'package:maui/repos/lesson_repo.dart';
+import 'package:maui/loca.dart';
 import 'package:maui/state/app_state_container.dart';
 import 'package:tuple/tuple.dart';
 import 'package:maui/components/unit_button.dart';
@@ -61,6 +62,7 @@ class ChatBotScreenState extends State<ChatBotScreen> {
   final TextEditingController _textController = new TextEditingController();
   bool _isComposing = false;
   bool _isKeyboard = false;
+  bool _canSend = true;
 
   @override
   void initState() {
@@ -82,8 +84,6 @@ class ChatBotScreenState extends State<ChatBotScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print('build ${_chatItems.length}');
-    print(_isComposing);
     final botImage = 'assets/chat_Bot_Icon.png';
 
     var widgets = <Widget>[
@@ -119,13 +119,12 @@ class ChatBotScreenState extends State<ChatBotScreen> {
 
     return new Scaffold(
         appBar: new AppBar(
-          title: new Text('Hoodie'),
+          title: new Text(Loca.of(context).hoodie),
         ),
         body: new Column(children: widgets));
   }
 
   Widget _buildInput() {
-    print(_isComposing);
     if (_currentMode == ChatMode.conversation) {
       return new IconTheme(
         data: IconThemeData(color: Theme.of(context).accentColor),
@@ -159,8 +158,10 @@ class ChatBotScreenState extends State<ChatBotScreen> {
                 new Container(
                     margin: new EdgeInsets.symmetric(horizontal: 4.0),
                     child: new IconButton(
-                      icon: new Icon(Icons.send),
-                      onPressed: _isComposing
+                      icon: _canSend
+                          ? Icon(Icons.send)
+                          : Icon(Icons.hourglass_empty),
+                      onPressed: _isComposing && _canSend
                           ? () => _handleTextInput(_textController.text)
                           : null,
                     ))
@@ -257,6 +258,7 @@ class ChatBotScreenState extends State<ChatBotScreen> {
   _handleSubmitted(ChatItem chatItem) {
     setState(() {
       _chatItems.insert(0, chatItem);
+      _canSend = false;
     });
     _animatedListKey.currentState
         .insertItem(0, duration: new Duration(milliseconds: 250));
@@ -283,6 +285,11 @@ class ChatBotScreenState extends State<ChatBotScreen> {
     }
     new Future.delayed(const Duration(milliseconds: 1000), () {
       if (mounted) _displayNextChat(chatItem);
+    });
+    Future.delayed(const Duration(milliseconds: 3000), () {
+      setState(() {
+        _canSend = true;
+      });
     });
   }
 
@@ -314,7 +321,6 @@ class ChatBotScreenState extends State<ChatBotScreen> {
               _chatHistory[ChatMode.teach].item2 >= _toTeach.length) ||
           (_currentMode == ChatMode.quiz &&
               _chatHistory[ChatMode.quiz].item2 < _toQuiz.length)) {
-        print('Current: $_currentMode Next: quiz History: $_chatHistory');
         if (_currentMode != ChatMode.quiz) {
           _toQuiz = List.from(_toTeach)..shuffle();
         }
@@ -358,7 +364,6 @@ class ChatBotScreenState extends State<ChatBotScreen> {
           _addChatItem(ChatMode.quiz, chatItemType, question);
         });
       } else {
-        print('Current: $_currentMode Next: teach History: $_chatHistory');
         if (_currentMode != ChatMode.teach) {
           if (_toTeach == null || _toTeach.isEmpty) {
             if (_lessonUnitIndex >= _lessonUnits.length) {

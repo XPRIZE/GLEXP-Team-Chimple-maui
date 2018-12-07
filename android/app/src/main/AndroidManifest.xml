@@ -19,6 +19,8 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
+
 
     <uses-feature android:name="android.hardware.camera2" />
 
@@ -32,16 +34,11 @@
         android:name="io.flutter.app.FlutterApplication"
         android:label="maui"
         android:icon="@mipmap/ic_launcher">
-        <service android:name="org.chimple.flores.scheduler.P2PIntentService" />
-        <service
-            android:name="org.chimple.flores.scheduler.P2PHandShakingJobService"
-            android:exported="false"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|smallestScreenSize"
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
             <!-- This keeps the window background of the activity showing
@@ -61,6 +58,17 @@
         <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"></action>
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".AutoLaunchReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>                
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />                
             </intent-filter>
         </receiver>
     </application>

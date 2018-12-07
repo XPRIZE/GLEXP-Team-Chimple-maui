@@ -3,6 +3,10 @@ import 'dart:core';
 import 'dart:io';
 import 'dart:convert';
 import 'dart:io';
+import 'package:maui/db/dao/tile_dao.dart';
+import 'package:maui/db/entity/tile.dart';
+import 'package:maui/repos/tile_repo.dart';
+import 'package:maui/state/app_state_container.dart';
 import 'package:meta/meta.dart';
 import 'package:maui/db/entity/user.dart';
 import 'package:maui/db/dao/user_dao.dart';
@@ -11,6 +15,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:uuid/uuid.dart';
+import 'package:maui/repos/dot_map.dart';
 
 class UserRepo {
   static final UserDao userDao = new UserDao();
@@ -33,19 +39,20 @@ class UserRepo {
 
   Future<User> insertOrUpdateRemoteUser(
       String userId, String deviceId, String txnText) async {
-    print('UserRepo.insertOrUpdateRemoteUser: $userId $deviceId');
-    final userInfo = txnText.split('*');
-    String base64Image = userInfo.last;
-    Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    List<int> memoryImage;
-    try {
-      memoryImage = base64.decode(base64Image);
-    } catch (e) {
-      print(e);
+    final userInfo = txnText.split(floresSeparator);
+    String imagePath;
+    if (userInfo.length == 3) {
+      String base64Image = userInfo.last;
+      Directory documentsDirectory = await getApplicationDocumentsDirectory();
+      List<int> memoryImage;
+      try {
+        memoryImage = base64.decode(base64Image);
+      } catch (e) {
+        print(e);
+      }
+      imagePath = join(documentsDirectory.path, '$userId.png');
+      await new File(imagePath).writeAsBytes(memoryImage);
     }
-    String imagePath = join(documentsDirectory.path, '$userId.png');
-    await new File(imagePath).writeAsBytes(memoryImage);
-
     User user = await userDao.getUser(userId);
     if (user == null) {
       await userDao.insert(User(
@@ -73,9 +80,9 @@ class UserRepo {
     var config = File(user.image);
     var contents = await config.readAsBytes();
     var enc = user.name +
-        '*' +
+        floresSeparator +
         user.color.toRadixString(16) +
-        '*' +
+        floresSeparator +
         base64.encode(contents);
     try {
       p2p.addUser(user.id, deviceId, enc);
@@ -86,7 +93,14 @@ class UserRepo {
       print('Stack trace:\n $s');
     }
 
-    print('Added main user: $user');
+    final tileRepo = TileRepo();
+    dotMap.forEach((k, v) => tileRepo.upsert(Tile(
+        id: k,
+        cardId: 'dummy',
+        content: v,
+        type: TileType.dot,
+        userId: user.id)));
+
     return await userDao.insert(user);
   }
 

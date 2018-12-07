@@ -3,14 +3,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:maui/games/head_to_head_game.dart';
 import 'package:maui/games/single_game.dart';
+import 'package:maui/quack/bento.dart';
+import 'package:maui/quack/card_detail.dart';
+import 'package:maui/quack/main_collection.dart';
+import 'package:maui/quack/story_page.dart';
 import 'package:maui/screens/chat_bot_screen.dart';
 import 'package:maui/screens/chat_screen.dart';
 import 'package:maui/screens/game_category_list_screen.dart';
+import 'package:maui/screens/game_list_view.dart';
 import 'package:maui/screens/login_screen.dart';
+import 'package:maui/screens/switch_screen.dart';
 import 'package:maui/screens/tab_home.dart';
 import 'package:maui/state/app_state_container.dart';
 import 'components/camera.dart';
+import 'package:maui/screens/welcome_screen.dart';
 import 'loca.dart';
+
+final RouteObserver<PageRoute> routeObserver = new RouteObserver<PageRoute>();
 
 class MauiApp extends StatelessWidget {
   @override
@@ -29,11 +38,17 @@ class MauiApp extends StatelessWidget {
       theme: new ThemeData(
         primarySwatch: Colors.blue,
       ),
+      navigatorObservers: <NavigatorObserver>[routeObserver],
       routes: <String, WidgetBuilder>{
-        '/': (BuildContext context) => new LoginScreen(),
-        '/tab': (BuildContext context) => new TabHome(),
+        '/': (BuildContext context) => new SwitchScreen(),
+        '/login': (BuildContext context) => new LoginScreen(),
+        '/welcome': (BuildContext context) => new WelcomeScreen(),
+        '/tab': (BuildContext context) => new Bento(),
         '/chatbot': (BuildContext context) => new ChatBotScreen(),
-        '/camera': (BuildContext context) => CameraScreen()
+        '/camera': (BuildContext context) => CameraScreen(false),
+        '/stories': (BuildContext context) => StoryPage(),
+        '/topics': (BuildContext context) => MainCollection(),
+        '/games': (BuildContext context) => GameListView()
       },
       onGenerateRoute: _getRoute,
     );
@@ -41,7 +56,6 @@ class MauiApp extends StatelessWidget {
 
   Route<Null> _getRoute(RouteSettings settings) {
     final List<String> path = settings.name.split('/');
-    print(path);
     if (path[0] != '') return null;
 
     if (path[1] == 'categories' && path.length == 3) {
@@ -50,9 +64,7 @@ class MauiApp extends StatelessWidget {
         builder: (BuildContext context) =>
             new GameCategoryListScreen(game: path[2]),
       );
-    }
-
-    if (path[1] == 'games' && path.length == 6) {
+    } else if (path[1] == 'games' && path.length == 6) {
       int gameCategoryId = int.parse(path[4], onError: (source) => null);
       Random random = new Random();
       final textMode = random.nextBool();
@@ -133,7 +145,15 @@ class MauiApp extends StatelessWidget {
                 ),
           );
       }
+    } else if (path[1] == 'card' && path.length == 4) {
+//      Provider.dispatch<RootState>(context, FetchCardDetail(card.id));
+
+      return new MaterialPageRoute<Null>(
+        settings: settings,
+        builder: (BuildContext context) => new CardDetail(),
+      );
     }
+
     return null;
   }
 }

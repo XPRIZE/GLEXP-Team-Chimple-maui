@@ -56,6 +56,7 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   static final chatMessageType = 'chat';
   bool _isLoading = true;
   AppStateContainerState appStateContainerState;
+  bool _canSend = true;
 
   @override
   void initState() {
@@ -84,7 +85,6 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     final myId = appStateContainerState.state.loggedInUser.id;
     final myImage = appStateContainerState.state.loggedInUser.image;
     var messages = appStateContainerState.messages;
-    print('chat_screen $messages');
     var latestMessage = Map<String, dynamic>();
     try {
       latestMessage = messages.first;
@@ -215,7 +215,6 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildBottomBar(InputType inputType, Map<String, dynamic> message) {
-    print('ChatScreen._buildBottomBar');
     switch (inputType) {
       case InputType.emoji:
         return SelectEmoji(
@@ -224,12 +223,18 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         break;
       case InputType.sticker:
         return SelectSticker(
-          onUserPress: _addSticker,
+          onUserPress: _canSend ? _addSticker : null,
         );
         break;
       case InputType.choices:
         return SelectTextChoice(
-            onUserPress: _addTextChoice, texts: message['choices']);
+            onUserPress: _canSend ? _addTextChoice : null,
+            texts: message['choices']);
+        break;
+      case InputType.hidden:
+        break;
+      case InputType.keyboard:
+        break;
     }
   }
 
@@ -249,7 +254,6 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   }
 
   void _onFocusChange() {
-    debugPrint("Focus: " + _focusNode.hasFocus.toString());
     if (_focusNode.hasFocus) {
       setState(() {
         _inputType = InputType.keyboard;
@@ -296,14 +300,16 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   margin: new EdgeInsets.symmetric(horizontal: 4.0),
                   child: Theme.of(context).platform == TargetPlatform.iOS
                       ? new CupertinoButton(
-                          child: new Text("Send"),
+                          child: new Text(Loca.of(context).send),
                           onPressed: _isComposing
                               ? () => _handleSubmitted(_textController.text)
                               : null,
                         )
                       : new IconButton(
-                          icon: new Icon(Icons.send),
-                          onPressed: _isComposing
+                          icon: _canSend
+                              ? Icon(Icons.send)
+                              : Icon(Icons.hourglass_empty),
+                          onPressed: _isComposing && _canSend
                               ? () => _handleSubmitted(_textController.text)
                               : null,
                         )),
@@ -338,5 +344,14 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
   void _sendMessage({String text, String imageUrl}) async {
     AppStateContainer.of(context).addChat(text);
+//    setState(() {
+//      _canSend = false;
+//    });
+//
+//    Future.delayed(const Duration(milliseconds: 3000), () {
+//      setState(() {
+//        _canSend = true;
+//      });
+//    });
   }
 }

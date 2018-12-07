@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:maui/components/expansionTile.dart';
 import 'package:maui/db/entity/quiz.dart';
 import 'package:maui/db/entity/user.dart';
-import 'package:maui/repos/quiz_progress_repo.dart';
 import 'package:maui/state/app_state_container.dart';
-import 'quiz_pager.dart';
 import 'package:uuid/uuid.dart';
+import 'card_list.dart';
 
 class QuizResult extends StatefulWidget {
   List<Map<String, dynamic>> quizInputs;
@@ -31,8 +30,15 @@ class QuizResultState extends State<QuizResult> {
   double marginSide = 0.0;
   double marginTop = 0.0;
   bool extentionTile = false;
+
   Widget _buildAskedQuestionExpandableTile(
       Map<String, dynamic> q, int _quizIndex, BuildContext context) {
+    print(
+        "<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+    print(q);
+    print(widget.quizzes[_quizIndex]);
+    print(_quizIndex);
+    print("............................................");
     scoreIs = scoreIs + _quizIndex;
     GlobalKey<ControlledExpansionTileState> _expandableTileKey =
         new GlobalObjectKey(q['question']);
@@ -44,7 +50,6 @@ class QuizResultState extends State<QuizResult> {
         key: _expandableTileKey,
         onExpansionChanged: (bool value) {
           if (value) {
-            
             if (_currentExpandedTile != null) {
               setState(() {
                 extentionTile = value;
@@ -101,10 +106,11 @@ class QuizResultState extends State<QuizResult> {
           ),
         ),
         children: <Widget>[
-          QuizPager.createQuiz(
-              quiz: widget.quizzes[_quizIndex],
-              input: widget.quizInputs[_quizIndex],
-              onEnd: null)
+          new CardList(
+            onEnd: null,
+            optionsType: widget.quizzes[_quizIndex].type,
+            input: widget.quizInputs[_quizIndex],
+          ),
         ],
       ),
     );
@@ -187,27 +193,28 @@ class QuizResultState extends State<QuizResult> {
     return _questionResults;
   }
 
-  void _initQuizProgressTable() async {
-    List<Map> quizInputsMapList = widget.quizInputs;
-    List<Quiz> quizzesMapList = widget.quizzes;
-    User _user = AppStateContainer.of(context).state.loggedInUser;
-    print("lion material");
-    for (var i = 0; i < quizInputsMapList.length; i++) {
-      print(await new QuizProgressRepo().insertOrUpdateQuizProgress(
-          Uuid().v4(),
-          _user.id,
-          quizzesMapList[0].topicId,
-          quizzesMapList[0].type,
-          quizInputsMapList[0]["correct"],
-          quizInputsMapList[0]["total"]));
-    }
-  }
+  // void _initQuizProgressTable() async {
+  //   List<Map> quizInputsMapList = widget.quizInputs;
+  //   List<Quiz> quizzesMapList = widget.quizzes;
+  //   WidgetsBinding.instance.addPostFrameCallback((_) async {
+  //     // User _user = AppStateContainer.of(context).state.loggedInUser;
+  //     for (var i = 0; i < quizInputsMapList.length; i++) {
+  //       // print(await new QuizProgressRepo().insertOrUpdateQuizProgress(
+  //       //     Uuid().v4(),
+  //       //     // _user.id,
+  //       //     quizzesMapList[0].topicId,
+  //       //     quizzesMapList[0].optionsType,
+  //       //     quizInputsMapList[0]["correct"],
+  //       //     quizInputsMapList[0]["total"]));
+  //     }
+  //   });
+  // }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _initQuizProgressTable();
+    // _initQuizProgressTable();
   }
 
   @override
@@ -216,8 +223,8 @@ class QuizResultState extends State<QuizResult> {
     marginSide = 0.0;
     marginTop = 0.0;
     scoreIs = 0;
-    buttonSize=0.0;
-    countTile=0;
+    buttonSize = 0.0;
+    countTile = 0;
     return new ListView(
       children: _buildListOfQuestionsAsked(context),
     );

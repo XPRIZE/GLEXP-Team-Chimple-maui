@@ -40,7 +40,6 @@ class _FriendListViewState extends State<FriendListView> {
   Widget build(BuildContext context) {
     final user = AppStateContainer.of(context).state.loggedInUser;
     var users = AppStateContainer.of(context).users;
-    print('FriendListView.users $users');
     var notifs = AppStateContainer.of(context).notifs;
     MediaQueryData media = MediaQuery.of(context);
     if (_isLoading) {
@@ -52,7 +51,7 @@ class _FriendListViewState extends State<FriendListView> {
       ));
     }
     return Container(
-      color: const Color(0xff36C5E4),
+      color: Color(0xFFFFFFFF),
       child: new GridView.count(
         crossAxisSpacing: 12.0,
         mainAxisSpacing: 12.0,

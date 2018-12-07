@@ -14,14 +14,21 @@ import io.flutter.plugins.GeneratedPluginRegistrant
 import io.flutter.plugin.common.MethodChannel
 import com.rivescript.Config
 import com.rivescript.RiveScript
+import org.chimple.flores.db.AppDatabase
+import org.chimple.flores.multicast.MulticastManager
+import org.chimple.flores.manager.BluetoothManager
+import org.chimple.flores.application.P2PContext
+
 
 
 class MainActivity(): FlutterActivity(),TextToSpeech.OnInitListener {
   private val CHANNEL = "org.sutara.maui/rivescript"
-  private var tts: TextToSpeech? = null
+  private var tts: TextToSpeech? = null  
+
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    println("onCreate")
     GeneratedPluginRegistrant.registerWith(this)
     tts = TextToSpeech(this, this)
     println("RiveScript")
@@ -59,13 +66,14 @@ class MainActivity(): FlutterActivity(),TextToSpeech.OnInitListener {
         result.notImplemented()
       }
     }
+    P2PContext.getInstance().initialize(this);
 
 
 
   }
 
   override fun onInit(status: Int) {
-
+    println("onInit")
     if (status == TextToSpeech.SUCCESS) {
       // set US English as language for tts
       val result = tts!!.setLanguage(Locale.US)
@@ -82,6 +90,7 @@ class MainActivity(): FlutterActivity(),TextToSpeech.OnInitListener {
 
   override fun onResume() {
     super.onResume()
+    println("onResume")
     val intent = Intent()
     intent.setClassName("org.chimple.bali", "org.chimple.bali.service.TollBroadcastReceiver")
     intent.putExtra("onResume", "sutara.org.maui")
@@ -90,6 +99,7 @@ class MainActivity(): FlutterActivity(),TextToSpeech.OnInitListener {
 
   override fun onPause() {
     super.onPause()
+    println("onPause")
     val intent = Intent()
     intent.setClassName("org.chimple.bali", "org.chimple.bali.service.TollBroadcastReceiver")
     intent.putExtra("onPause", "sutara.org.maui")
@@ -97,6 +107,11 @@ class MainActivity(): FlutterActivity(),TextToSpeech.OnInitListener {
   }
 
   public override fun onDestroy() {
+    println("onDestroy")
+    P2PContext.getInstance().onCleanUp();
+    MulticastManager.getInstance(this).onCleanUp()
+    BluetoothManager.getInstance(this).onCleanUp()
+
     // Shutdown TTS
     if (tts != null) {
       tts!!.stop()
@@ -105,4 +120,17 @@ class MainActivity(): FlutterActivity(),TextToSpeech.OnInitListener {
     super.onDestroy()
   }
 
+
+  companion object {
+
+        private var appLaunched: Boolean = false;
+        
+        fun appLaunched() {
+          appLaunched = true;
+        }
+
+        fun isAppLaunched(): Boolean {
+          return appLaunched;
+        }
+    }
 }

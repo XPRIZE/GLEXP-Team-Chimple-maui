@@ -2,9 +2,19 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:io';
 
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_redurx/flutter_redurx.dart';
+import 'package:maui/actions/add_comment.dart';
+import 'package:maui/actions/add_like.dart';
+import 'package:maui/actions/fetch_card_detail.dart';
+import 'package:maui/actions/fetch_initial_data.dart';
+import 'package:maui/actions/post_tile.dart';
+import 'package:maui/db/entity/comment.dart';
+import 'package:maui/db/entity/tile.dart';
+import 'package:maui/models/root_state.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -26,6 +36,8 @@ import 'package:maui/repos/log_repo.dart';
 import 'package:maui/loca.dart';
 
 enum ChatMode { teach, conversation, quiz }
+
+final floresSeparator = '}|~{';
 
 class AppStateContainer extends StatefulWidget {
   final AppState state;
@@ -52,7 +64,7 @@ class AppStateContainerState extends State<AppStateContainer> {
   String activity;
   String friendId;
   List<User> users;
-  List<Notif> notifs;
+  List<Notif> notifs = [];
   AudioPlayer _audioPlayer;
   bool _isPlaying = false;
   bool isShowingFlashCard = true;
@@ -66,11 +78,11 @@ class AppStateContainerState extends State<AppStateContainer> {
   int _currentQuizUnit;
   ChatMode _currentMode = ChatMode.conversation;
   String _expectedAnswer;
+  String extStorageDir;
 
   @override
   void initState() {
     super.initState();
-    print('AppStateContainer: main initState');
     if (widget.state != null) {
       state = widget.state;
     } else {
@@ -95,23 +107,9 @@ class AppStateContainerState extends State<AppStateContainer> {
         initializationSettingsAndroid, initializationSettingsIOS);
     flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
     flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        selectNotification: onSelectNotification);
+        onSelectNotification: onSelectNotification);
     botMessages = List<dynamic>();
-  }
-
-  @override
-  void didChangeDependencies() {
-    print('AppStateContainer:didChangeDependencies');
-  }
-
-  @override
-  void didUpdateWidget(AppStateContainer oldWidget) {
-    print('AppStateContainer:didUpdateWidget');
-  }
-
-  @override
-  void reassemble() {
-    print('AppStateContainer:reassemble');
+    getExternalStorageDirectory().then((d) => extStorageDir = '${d.path}/');
   }
 
   void _initAudioPlayer() {
@@ -137,14 +135,9 @@ class AppStateContainerState extends State<AppStateContainer> {
   }
 
   Future onSelectNotification(String payload) async {
-    if (payload != null) {
-      debugPrint('notification payload: ' + payload);
-    }
     var split = payload.split(':');
-    debugPrint('split $split');
     if (split[0] == 'chat') {
       User user = await UserRepo().getUser(split[1]);
-      debugPrint('navigating to $user');
       await Navigator.push(
           context,
           MaterialPageRoute<Null>(
@@ -161,7 +154,6 @@ class AppStateContainerState extends State<AppStateContainer> {
       final directory = await getApplicationDocumentsDirectory();
       final path = directory.path;
       final file = new File('$path/$fileName');
-      print('Playing ${file.path}');
       if (await file.exists()) {
         await _audioPlayer.play(file.path, isLocal: true);
       } else {
@@ -180,13 +172,13 @@ class AppStateContainerState extends State<AppStateContainer> {
       final directory = await getApplicationDocumentsDirectory();
       final path = directory.path;
       final file = new File('$path/$word.ogg');
-      print('Playing ${file.path}');
       if (await file.exists()) {
         await _audioPlayer.play(file.path, isLocal: true);
       } else {
-        await file.writeAsBytes((await rootBundle.load('assets/dict/$word.ogg'))
-            .buffer
-            .asUint8List());
+        final name = "assets/dict/$word.ogg";
+        File file1 = File(AppStateContainer.of(context).extStorageDir + name);
+        await file.writeAsBytes(
+            (await rootBundle.load("$file1")).buffer.asUint8List());
         await _audioPlayer.play(file.path, isLocal: true);
       }
     } catch (e) {
@@ -196,14 +188,12 @@ class AppStateContainerState extends State<AppStateContainer> {
     }
   }
 
-   void playArticleAudio(
-      String audio, Function onComplete) async {
+  void playArticleAudio(String audio, Function onComplete) async {
     audio = audio.toLowerCase();
     try {
       final directory = await getApplicationDocumentsDirectory();
       final path = directory.path;
       final file = new File('$path/sample.ogg');
-      print('Playing ${file.path}');
       if (await file.exists()) {
         await _audioPlayer.play(file.path, isLocal: true);
       } else {
@@ -215,7 +205,6 @@ class AppStateContainerState extends State<AppStateContainer> {
       print(e);
     }
     _audioPlayer.completionHandler = () {
-      print('audio completed::');
       onComplete();
     };
   }
@@ -263,7 +252,6 @@ class AppStateContainerState extends State<AppStateContainer> {
         print('Exception details:\n $e');
         print('Stack trace:\n $s');
       }
-      print('_fetchMessages: $msgs');
       msgs ??= List<Map<String, String>>();
       await NotifRepo().delete(fId, 'chat');
       setState(() {
@@ -287,9 +275,7 @@ class AppStateContainerState extends State<AppStateContainer> {
         botMessages.removeRange(maxChats, botMessages.length);
       botMessages
           .insert(0, {'userId': state.loggedInUser.id, 'message': message});
-      print('insert $message');
       final msg = await _respondToChat(message);
-      print('insert $msg');
       botMessages.insert(0, msg);
     } else {
       try {
@@ -306,12 +292,12 @@ class AppStateContainerState extends State<AppStateContainer> {
   }
 
   void onReceiveMessage(Map<dynamic, dynamic> message) async {
-    print(
-        '_onReceiveMessage $message ${state.loggedInUser.id} $friendId $activity');
+    writeLog(
+        "msg,${message['userId']},${message['messageType']},${message['message']}}");
     if (!(message['userId'] == friendId &&
         activity == 'chat' &&
         message['messageType'] == 'chat')) {
-      await NotifRepo().increment(message['userId'], message['messageType'], 1);
+//      await NotifRepo().increment(message['userId'], message['messageType'], 1);
     }
     if (message['messageType'] == 'Photo') {
       await UserRepo().insertOrUpdateRemoteUser(
@@ -319,36 +305,75 @@ class AppStateContainerState extends State<AppStateContainer> {
       if (activity == 'friends') {
         getUsers();
       }
-    } else if (message['recipientUserId'] == state.loggedInUser.id) {
-      NotifRepo().increment(message['userId'], message['messageType'], 1);
+    } else if (message['messageType'] == 'like') {
+      String content = message['message'];
+      final msgList = content.split(floresSeparator);
+      if (msgList?.length == 2) {
+        Provider.dispatch<RootState>(
+            context,
+            AddLike(
+                parentId: msgList[1],
+                tileType: TileType.values[int.parse(msgList[0])],
+                userId: message['userId']));
+      }
+    } else if (message['messageType'] == 'tile') {
+      String content = message['message'];
+      final msgList = content.split(floresSeparator);
+      if (msgList?.length >= 4) {
+        final tile = Tile(
+            id: msgList[0],
+            type: TileType.values[int.parse(msgList[1])],
+            cardId: msgList[2],
+            content: msgList[3],
+            userId: message['userId'],
+            updatedAt: DateTime.now());
+        Provider.dispatch<RootState>(context, PostTile(tile: tile));
+      }
+    } else if (message['messageType'] == 'comment') {
+      String content = message['message'];
+      final msgList = content.split(floresSeparator);
+      print(msgList);
+      if (msgList?.length >= 4) {
+        final comment = Comment(
+            id: msgList[0],
+            parentId: msgList[2],
+            comment: msgList[3],
+            userId: message['userId'],
+            timeStamp: DateTime.now());
+        Provider.dispatch<RootState>(
+            context,
+            AddComment(
+                comment: comment,
+                tileType: TileType.values[int.parse(msgList[1])]));
+      }
+    } else if (message['recipientUserId'] == state.loggedInUser?.id) {
+//      NotifRepo().increment(message['userId'], message['messageType'], 1);
       if (message['messageType'] == 'chat') {
-        showNotification(
-            message['userId'],
-            message['messageType'],
-            message['message'],
-            message['messageType'] + ':' + message['userId']);
+//        showNotification(
+//            message['userId'],
+//            message['messageType'],
+//            message['message'],
+//            message['messageType'] + ':' + message['userId']);
         if (message['userId'] == friendId && activity == 'chat') {
           beginChat(friendId);
         }
       } else {
-        showNotification(message['userId'], message['messageType'], '',
-            message['messageType'] + ':' + message['userId']);
+//        showNotification(message['userId'], message['messageType'], '',
+//            message['messageType'] + ':' + message['userId']);
       }
     }
   }
 
   Future<void> getUsers() async {
-    print('getUsers begin');
     activity = 'friends';
     final userList = await UserRepo().getRemoteUsers();
     final botUser = await UserRepo().getUser(User.botId);
     userList.insert(0, botUser);
-    final notifList = await NotifRepo().getNotifsByType('chat');
+//    final notifList = await NotifRepo().getNotifsByType('chat');
     setState(() {
       users = userList;
-      notifs = notifList;
+//      notifs = notifList;
     });
-    print('getUsers end');
   }
 
   Future<Map<String, dynamic>> _respondToChat(String message) async {
@@ -357,7 +382,7 @@ class AppStateContainerState extends State<AppStateContainer> {
     } else if (message == Loca().letUsChat) {
       _currentMode = ChatMode.conversation;
     } else if (_currentMode == ChatMode.quiz) {
-      if (message.startsWith('*')) message = message.substring(3);
+      if (message.startsWith(floresSeparator)) message = message.substring(3);
       if (message != _expectedAnswer) {
         _toTeach.add(_toQuiz[_currentQuizUnit]);
       }
@@ -413,19 +438,16 @@ class AppStateContainerState extends State<AppStateContainer> {
       case ChatMode.quiz:
         String question;
         List<String> choices;
-        print(_lesson);
         if (_lesson.conceptId == 3 || _lesson.conceptId == 5) {
           question = _toQuiz[_currentQuizUnit].objectUnitId;
           _expectedAnswer = question;
           List<LessonUnit> lessonUnits =
               List.from(_lessonUnits, growable: false)..shuffle();
-          print(lessonUnits);
           choices = lessonUnits
               .where((l) => l.objectUnitId != _expectedAnswer)
               .take(3)
               .map((l) => l.objectUnitId)
               .toList();
-          print(choices);
         } else {
           question = _toQuiz[_currentQuizUnit].objectUnitId?.length > 0
               ? _toQuiz[_currentQuizUnit].objectUnitId
@@ -472,14 +494,16 @@ class AppStateContainerState extends State<AppStateContainer> {
         print('Stack trace:\n $s');
       }
     }
-    try {
-      p2p.start();
-    } on PlatformException {
-      print('Flores: Failed start');
-    } catch (e, s) {
-      print('Exception details:\n $e');
-      print('Stack trace:\n $s');
-    }
+    Provider.dispatch<RootState>(context, FetchInitialData(user));
+
+//    try {
+//      p2p.start();
+//    } on PlatformException {
+//      print('Flores: Failed start');
+//    } catch (e, s) {
+//      print('Exception details:\n $e');
+//      print('Stack trace:\n $s');
+//    }
     _lessonUnits = await new LessonUnitRepo().getLessonUnitsByLessonId(56);
     _lesson = await new LessonRepo().getLesson(56);
 //    _lessonUnits = await new LessonUnitRepo()
