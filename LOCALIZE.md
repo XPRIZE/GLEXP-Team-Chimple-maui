@@ -1,0 +1,80 @@
+#Localize all images, audio and video inside assets folder
+
+#Code files to be modified
+lib
+	app 
+	loca
+	main
+	components
+		Played_games_score
+		Profile_drawer
+		quiz_welcome
+	games
+		Abacus
+		calculate_numbers
+		casino
+		clue_game
+		crossword
+		dice_game
+		draw_challenge
+		friendWord
+		picture_sentence
+		single_game
+		tables
+	I10n
+		intl_en
+		intl_messah=ges
+		intl_sw
+		messages_all
+		messages_en
+		messages_messages
+		messages_sw
+	quack
+		audio_text_bold
+		card_lock
+		drawing_lock
+		post_comments
+	quiz
+		grouping_quiz
+		match_the_following
+		multiple_choice
+		quiz_pager
+		sequence
+	repo
+		chat_bot_data
+		comments_repo
+		dot_map
+		game_category_repo
+		game_data
+		home_page_repo
+		likes_repo
+		user_repo
+	screens
+		chat_bot_screen
+		chat_screen
+		comment_list_view
+		game_category_list_screen
+		game_list_view
+		home_page_view
+		profile_view
+		score_screen
+		tab_home
+		welcome_screen	
+scripts
+	en
+		Animals
+		common
+		Foods
+		Occupations
+		open
+		story
+		Vehicles
+	old 
+		.csv files
+	.csv files
+
+test
+	*_test
+
+test_driver
+	*_test
