@@ -1,80 +1,52 @@
-#Localize all images, audio and video inside assets folder
-
-#Code files to be modified
-lib
-	app 
-	loca
-	main
-	components
-		Played_games_score
-		Profile_drawer
-		quiz_welcome
-	games
-		Abacus
-		calculate_numbers
-		casino
-		clue_game
-		crossword
-		dice_game
-		draw_challenge
-		friendWord
-		picture_sentence
-		single_game
-		tables
-	I10n
-		intl_en
-		intl_messah=ges
-		intl_sw
-		messages_all
-		messages_en
-		messages_messages
-		messages_sw
-	quack
-		audio_text_bold
-		card_lock
-		drawing_lock
-		post_comments
-	quiz
-		grouping_quiz
-		match_the_following
-		multiple_choice
-		quiz_pager
-		sequence
-	repo
-		chat_bot_data
-		comments_repo
-		dot_map
-		game_category_repo
-		game_data
-		home_page_repo
-		likes_repo
-		user_repo
-	screens
-		chat_bot_screen
-		chat_screen
-		comment_list_view
-		game_category_list_screen
-		game_list_view
-		home_page_view
-		profile_view
-		score_screen
-		tab_home
-		welcome_screen	
-scripts
-	en
-		Animals
-		common
-		Foods
-		Occupations
-		open
-		story
-		Vehicles
-	old 
-		.csv files
-	.csv files
-
-test
-	*_test
-
-test_driver
-	*_test
+# Localize all images, audio and video inside assets folder
+# Content in the following files also need to be localized:
+## [assets](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/assets)
+### database.db
+## [lib](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib)
+### app
+### loca
+### [components](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/components)
+#### Played_games_score
+#### Profile_drawer
+#### quiz_welcome
+### [games](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/games)
+#### calculate_numbers
+#### casino
+#### clue_game
+#### crossword
+#### dice_game
+#### draw_challenge
+#### friendWord
+#### picture_sentence
+#### tables
+### [I10n](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/l10n)
+#### intl_en
+#### intl_messages
+#### intl_sw
+#### messages_messages
+#### messages_all
+#### messages_sw
+#### messages_en
+### [quack](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/quack)
+#### audio_text_bold
+#### post_comments
+### [quiz](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/quiz)
+#### grouping_quiz
+#### match_the_following
+#### multiple_choice
+#### sequence
+### [repos](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/repos)
+#### chat_bot_data
+#### dot_map
+#### game_data
+### [screens](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/screens)
+#### chat_bot_screen
+#### chat_screen
+#### comment_list_view
+#### game_category_list_screen
+#### game_list_view
+#### home_page_view
+#### profile_view
+## [test](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/test)
+### card_list_widget_test
+### matching_quiz_widget_test
