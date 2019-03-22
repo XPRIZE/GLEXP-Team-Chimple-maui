@@ -22,10 +22,8 @@
 >### [I10n](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/l10n)
 >>#### intl_en
 >>#### intl_messages
->>#### intl_sw
 >>#### messages_messages
 >>#### messages_all
->>#### messages_sw
 >>#### messages_en
 >### [quack](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/quack)
 >>#### audio_text_bold
