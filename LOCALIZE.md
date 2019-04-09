@@ -4,15 +4,15 @@
 2. [app.dart](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/app.dart) and [loca.dart](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/loca.dart) files contain methods which set the locale along with a list of other supported locales.
 3. [played_games_score.dart](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/components/played_games_score.dart) and [quiz_welcome.dart](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/components/quiz_welcome.dart) files create and apply animation and return the component. These files contain messages rendered in the app's UI.
 4. The following files are from [games](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/games) folder which are used to implement games and contain variables and methods which are specific to a locale:  
-	1. [calculate_numbers.dart](https://github.com/XPRIZE/GLEXPTeamChimplemaui/tree/master/lib/games/calculate_numbers.dart)
-	2. [casino.dart](https://github.com/XPRIZE/GLEXPTeamChimplemaui/tree/master/lib/games/casino.dart)
-	3. [clue_game.dart](https://github.com/XPRIZE/GLEXPTeamChimplemaui/tree/master/lib/games/clue_game.dart)
-	4. [crossword.dart](https://github.com/XPRIZE/GLEXPTeamChimplemaui/tree/master/lib/games/crossword.dart)  
-	5. [dice_game.dart](https://github.com/XPRIZE/GLEXPTeamChimplemaui/tree/master/lib/games/dice_game.dart)  
-	6. [draw_challenge.dart](https://github.com/XPRIZE/GLEXPTeamChimplemaui/tree/master/lib/games/draw_challenge.dart)
-	7. [friendWord.dart](https://github.com/XPRIZE/GLEXPTeamChimplemaui/tree/master/lib/games/friendWord.dart)
-	8. [picture_sentence.dart](https://github.com/XPRIZE/GLEXPTeamChimplemaui/tree/master/lib/games/picture.sentence.dart)
-	9. [tables.dart](https://github.com/XPRIZE/GLEXPTeamChimplemaui/tree/master/lib/games/tables.dart)
+	1. [calculate_numbers.dart](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/games/calculate_numbers.dart)
+	2. [casino.dart](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/games/casino.dart)
+	3. [clue_game.dart](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/games/clue_game.dart)
+	4. [crossword.dart](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/games/crossword.dart)  
+	5. [dice_game.dart](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/games/dice_game.dart)  
+	6. [draw_challenge.dart](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/games/draw_challenge.dart)
+	7. [friendWord.dart](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/games/friendWord.dart)
+	8. [picture_sentence.dart](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/games/picture.sentence.dart)
+	9. [tables.dart](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/games/tables.dart)
 5. The following files are from [l10n](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/l10n) folder which contain hardcoded language words:
 	1. [intl_en.arb](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/l10n/intl_en.arb)
 	2. [intl_messages.arb](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/l10n/intl_messages.arb)
