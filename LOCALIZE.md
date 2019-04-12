@@ -3,8 +3,8 @@
 
 The following steps needs to be performed to localize in a given language:
 
-1. **Analysis of content**: Make a complete list of the content in the local language which can be taught to a child with these games. Writing of additional material in the form of sentences and words for topics, stories and games in the app.
-2. **Translation**: Translate the full database consisting of tables for creating  topics, stories and games. 
+1. **Analysis and creating of content**: Make a complete list of the content in the local language which can be taught to a child. Generate the content i.e. sentences and words for topics, stories and games so that it can be used in the application.
+2. **Translation of database**: Translate the full database consisting of tables for creating  topics, stories and games. 
 3. **Images and animation**: Create new images and animation in the local language. 
 4. **Final build**: With all assets prepared and added to the project, build the maui application.
 
@@ -19,7 +19,7 @@ The following steps needs to be performed to localize in a given language:
             const Locale('sw', ''),
           ],
         ``` 
-	2. The following files are from [l10n](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/l10n) folder contains intl library files that are required for localization using flutter. Use this file [intl_en.arb](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/l10n/intl_en.arb) as a reference file to create a similar file in another locale. e.g. create intl_hi.arb file containing Hindi content after translating content in intl_en.arb file.
+	2. The following files are from [l10n](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/l10n) folder containing intl library files that are required for localization using flutter. Use this file [intl_en.arb](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/l10n/intl_en.arb) as a reference file to create a similar file in another locale. e.g. create intl_hi.arb file containing Hindi content after translating content in intl_en.arb file.
 	3. With the translations ready, generate messages_{locale}.dart files for localization. Follow the steps and command mentioned [here](https://flutter.dev/docs/development/accessibility-and-localization/internationalization) to generate locale specific files.
 2. The [assets](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/assets) contains locale specific database files which contains tables containing locale specific data. The database can be viewed using SQLiteStudio. Create a copy of the database file and update the title/ content columns for the tables with locale specific content.
 3. The following files are from [games](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/games) folder which are used to implement games. Update variables and methods as per the required locale in the files listed below:
@@ -32,9 +32,9 @@ The following steps needs to be performed to localize in a given language:
 	7. [friendWord.dart](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/games/friendWord.dart)
 	8. [picture_sentence.dart](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/games/picture.sentence.dart)
 	9. [tables.dart](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/games/tables.dart)
-4. [played_games_score.dart](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/components/played_games_score.dart) and [quiz_welcome.dart](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/components/quiz_welcome.dart) files create and apply animation and return the component. These files contain messages rendered in the app's UI.
+4. [played_games_score.dart](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/components/played_games_score.dart) and [quiz_welcome.dart](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/components/quiz_welcome.dart) files contain messages rendered in the app's UI.
 5. The following files are from [quiz](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/quiz) folder and contain classes which initialize variables with locale specific content.
-e.g. Replace the content in the testMap variable as per the required locale 
+e.g. replace the content in the testMap variable as per the required locale 
 	```
     const Map<String, dynamic> testMap = {
       'image': 'xyz.png',
@@ -53,7 +53,7 @@ e.g. Replace the content in the testMap variable as per the required locale
 	3. [multiple_choice.dart](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/quiz/multiple_choice.dart)
 	4. [sequence.dart](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/quiz/sequence.dart)
 6. The following files are from [repos](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/repos) folder and contain text data for chatting:
-	1. [chat_bot_data.dart](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/repos/chat_bot_data.dart): Add a new map called reply{Lang} and oneLiners{Lang} containing locale specific text for chatting. Update the code in the following function as below:
+	1. [chat_bot_data.dart](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/repos/chat_bot_data.dart): Add a new map called reply{Lang} and oneLiners{Lang} containing locale specific text for chatting. Update the code in the following function as shown below:
       ```fluter
       List<String> getPossibleReplies(String currentChat, int num) {
         final reply = reply{Lang};
@@ -68,7 +68,7 @@ e.g. Replace the content in the testMap variable as per the required locale
 	2. [comment_list_view.dart](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/screens/comment_list_view.dart)
 	3. [home_page_view.dart](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/lib/screens/home_page_view.dart)
 8. The following files are from [test](https://github.com/XPRIZE/GLEXP-Team-Chimple-maui/tree/master/test) folder and contain questions and options which are specific to a locale. 
-e.g. Replace the content in the TestMap variable with locale specific content: 
+e.g. replace the content in the testMap variable with locale specific content: 
     ```
     const Map<String, dynamic> testMap = {
       'question': 'Select the animals from small to big',
